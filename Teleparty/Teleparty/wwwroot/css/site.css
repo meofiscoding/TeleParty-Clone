@@ -11,8 +11,18 @@ html {
 html {
   position: relative;
   min-height: 100%;
+  color:white;
 }
 
 body {
   margin-bottom: 60px;
+  background:black;
+}
+
+a{
+    color: white !important;
+}
+
+li{
+    color:white !important;
 }
