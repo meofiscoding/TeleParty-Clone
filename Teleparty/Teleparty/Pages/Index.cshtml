@@ -15,8 +15,8 @@
         <div class="card my-2 mx-2" style="width: 18rem;">
             <img class="card-img-top" src="@($"https://www.themoviedb.org/t/p/w440_and_h660_face{@item.poster_path}")" alt="Card image cap">
             <div class="card-body d-flex flex-column justify-content-between">
-                <strong>@item.title</strong>
-                <a type="button" class="btn btn-danger my-2" asp-page="./Party" asp-route-name="@item.original_title">Watch</a>
+                <strong class="movie-name">@item.title</strong>
+                <a type="button" class="btn btn-danger watch my-2" asp-page="./Party" asp-route-name="@item.original_title">Watch</a>
             </div>
         </div>
     }
@@ -27,16 +27,32 @@
         cursor: pointer;
     }
 </style>
-
+<script src="~/js/signalr/dist/browser/signalr.js" asp-append-version="true"></script>
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
      debugger;
+      var connection = new signalR.HubConnectionBuilder()
+        .withUrl("/chatHub")
+        .build();
+
+    connection.invoke("JoinGroup").addEventListener(function (message) {
+        
+        console.log(message);
+    });
        //check if TempData["Err"] not null and not empty
          if ("@TempData["Err"]"  !=  "" ) {
               //show error message
               alert("@TempData["Err"]");
          }
+
+         $(".watch").click(function(){
+            //get movie name
+            var movieName = $(this).parent().find(".movie-name").html();
+            connection.invoke("JoinGroup", movieName).catch(function (err) {
+                return console.error(err.toString());
+            });
+         })
     });
 </script>
 
