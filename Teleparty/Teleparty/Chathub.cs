@@ -38,11 +38,14 @@ namespace Teleparty
             await base.OnConnectedAsync();
         }
 
-
+        public override async Task OnDisconnectedAsync(Exception? exception)
+        {
+            await base.OnDisconnectedAsync(exception);
+        }
 
         public Task SendMessageToGroup(string group, string message)
         {
             return Clients.Group(group).SendAsync("ReceiveMessage", message);
-        }
+        } 
     }
 }

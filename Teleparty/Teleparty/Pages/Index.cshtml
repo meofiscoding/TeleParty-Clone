@@ -4,7 +4,8 @@
     ViewData["Title"] = "Home page";
 }
 <div class="input-group mb-3">
-    <input type="text" class="form-control" placeholder="Search for film..." aria-label="Recipient's username" aria-describedby="basic-addon2">
+    <input type="text" class="form-control" placeholder="Search for film..." aria-label="Recipient's username"
+        aria-describedby="basic-addon2">
     <div class="input-group-append">
         <button class="btn btn-outline-secondary" type="button">Search</button>
     </div>
@@ -13,10 +14,12 @@
     @foreach (var item in Model.Movie)
     {
         <div class="card my-2 mx-2" style="width: 18rem;">
-            <img class="card-img-top" src="@($"https://www.themoviedb.org/t/p/w440_and_h660_face{@item.poster_path}")" alt="Card image cap">
+            <img class="card-img-top" src="@($"https://www.themoviedb.org/t/p/w440_and_h660_face{@item.poster_path}")"
+            alt="Card image cap">
             <div class="card-body d-flex flex-column justify-content-between">
                 <strong class="movie-name">@item.title</strong>
-                <a type="button" class="btn btn-danger watch my-2" asp-page="./Party" asp-route-name="@item.original_title">Watch</a>
+                <a type="button" class="btn btn-danger watch my-2" asp-page="./Party"
+                asp-route-name="@item.original_title">Watch</a>
             </div>
         </div>
     }
@@ -29,35 +32,36 @@
 </style>
 <script src="~/js/signalr/dist/browser/signalr.js" asp-append-version="true"></script>
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+@section Scripts {
 <script type="text/javascript">
     $(document).ready(function () {
-     debugger;
-      var connection = new signalR.HubConnectionBuilder()
-        .withUrl("/chatHub")
-        .build();
+        debugger;
+        var connection = new signalR.HubConnectionBuilder()
+            .withUrl("/chatHub")
+            .build();
 
-    connection.invoke("JoinGroup").addEventListener(function (message) {
-        
-        console.log(message);
-    });
-       //check if TempData["Err"] not null and not empty
-         if ("@TempData["Err"]"  !=  "" ) {
-              //show error message
-              alert("@TempData["Err"]");
-         }
+        //check if TempData["Err"] not null and not empty
+        if ("@TempData["Err"]" != "") {
+            //show error message
+            alert("@TempData["Err"]");
+        }
 
-         $(".watch").click(function(){
+        connection.start().then(function () {
+           console.log("connected");
+        }).catch(function (err) {
+            return console.error(err.toString());
+        });
+
+
+        $(".watch").click(function () {
+            debugger;
             //get movie name
             var movieName = $(this).parent().find(".movie-name").html();
             connection.invoke("JoinGroup", movieName).catch(function (err) {
                 return console.error(err.toString());
             });
-         })
-    });
+        })
+    })
 </script>
-
-
-
-
-
-
+}

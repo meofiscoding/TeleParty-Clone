@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Teleparty;
 using Teleparty.Data;
 using Teleparty.Models;
 
@@ -16,7 +17,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
            .AddDefaultUI()
            .AddDefaultTokenProviders();
 builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
-
+builder.Services.AddSignalR();
 builder.Services.Configure<IdentityOptions>(options =>
 {
         // Password settings.
@@ -72,5 +73,5 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapRazorPages();
-
+app.MapHub<Chathub>("/chatHub");
 app.Run();
