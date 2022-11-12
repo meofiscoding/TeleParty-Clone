@@ -1,4 +1,5 @@
 ﻿using HtmlAgilityPack;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
@@ -6,6 +7,7 @@ using System.Text.Json;
 
 namespace Teleparty.Pages
 {
+    [Authorize]
     public class IndexModel : PageModel
     {
         private readonly ILogger<IndexModel> _logger;

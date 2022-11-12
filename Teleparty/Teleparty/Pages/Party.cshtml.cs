@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Teleparty.Pages
 {
+    [Authorize]
     public class PartyModel : PageModel
     {
         [BindProperty]
