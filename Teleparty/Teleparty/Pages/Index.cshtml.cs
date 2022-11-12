@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using HtmlAgilityPack;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
 using System.Text.Json;
@@ -60,5 +61,24 @@ namespace Teleparty.Pages
             var listmovies = JsonConvert.DeserializeObject<Root>(result);
             Movie = listmovies.results;
         }
+
+
+        public async Task OnGetAsync(string name)
+        {
+            var client = new HttpClient();
+            var request = new HttpRequestMessage();
+            request.RequestUri = new Uri("https://api.themoviedb.org/3/trending/movie/week?api_key=5a626560913d4cbd29ba9b8ba06221ad&page=1");
+            request.Method = HttpMethod.Get;
+
+            request.Headers.Add("Accept", "*/*");
+            request.Headers.Add("User-Agent", "Thunder Client (https://www.thunderclient.com)");
+
+            var response = await client.SendAsync(request);
+            var result = await response.Content.ReadAsStringAsync();
+
+            var listmovies = JsonConvert.DeserializeObject<Root>(result);
+            Movie = listmovies.results;
+        }
+
     }
 }
