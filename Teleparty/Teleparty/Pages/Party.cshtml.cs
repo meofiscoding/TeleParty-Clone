@@ -29,34 +29,57 @@ namespace Teleparty.Pages
             var web = new HtmlAgilityPack.HtmlDocument();
             web.LoadHtml(result);
             string innerText = "";
+            //Exist with Search
             var htmlnode = web.DocumentNode.SelectNodes("//div[@class='movie-title-1']");
-            if (htmlnode == null)
+            //Exist but to straight to watch 
+            var watchnode = web.DocumentNode.SelectNodes("//a[@id='btn-film-watch']");
+            if (htmlnode == null && watchnode == null)
             {
-                ViewData["Err"] = "This film is currently not available";
+                TempData["Err"] = "This film is currently not available";
                 //Come back to Index page
                 return RedirectToPage("/Index");
             }
-            else
+            if (watchnode != null)
+            {
+                innerText = watchnode[0].Attributes[3].Value.Split("-")[0].Trim();
+                //check if innerText contains "Xem phim" 
+                if(innerText.Contains("Xem phim"))
+                {
+                    //Replace "Xem phim" with "Xem+phim"
+                    innerText = innerText.Replace("Xem phim",  "").Trim(); 
+                }
+                innerText = RemoveSign4VietnameseString(innerText);
+                innerText = innerText.ToLower().Replace(" ", "-");
+            }
+            if (htmlnode != null)
             {
                 innerText = htmlnode[0].InnerText;
                 innerText = RemoveSign4VietnameseString(innerText);
                 innerText = innerText.ToLower().Replace(" ", "-");
-            } 
-            
+            }
 
             //Get Film Id
             var html = await GetFilmIdAsync(innerText);
             var pattern = @"filmInfo.filmID = parseInt\('([0-9]+)'\);";
             var id = Regex.Match(html, pattern).Groups[1].Value;
-
+            if (String.IsNullOrEmpty(id))
+            {
+                TempData["Err"] = "This film is currently not available";
+                //Come back to Index page
+                return RedirectToPage("/Index");
+            }
             //Get film src
-            var srcFrame = await GetFilmSrc(Convert.ToInt32(id));
-            var pattern2 =  "=(http.*)\"";
+            var srcFrame = await GetFilmSrc(Convert.ToInt32(id),1);
+            if (String.IsNullOrEmpty(srcFrame))
+            {
+                srcFrame = await GetFilmSrc(Convert.ToInt32(id), 3);
+            }
+            var pattern2 = "=(http.*)\"";
             Source = Regex.Match(srcFrame, pattern2).Groups[1].Value;
             return Page();
         }
 
-        private async Task<string> GetFilmSrc(int id)
+        private async Task<string> GetFilmSrc(int id, int severId)
         {
             var client = new HttpClient();
             var request = new HttpRequestMessage();
@@ -71,7 +94,7 @@ namespace Teleparty.Pages
             content.Add(new StringContent("1"), "episode");
             content.Add(new StringContent("1"), "server");
             content.Add(new StringContent($"{id}"), "postid");
-            content.Add(new StringContent("1"), "ep_link");
+            content.Add(new StringContent($"{severId}"), "ep_link");
             request.Content = content;
 
             var response = await client.SendAsync(request);

@@ -28,6 +28,18 @@
     }
 </style>
 
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+     debugger;
+       //check if TempData["Err"] not null and not empty
+         if ("@TempData["Err"]"  !=  "" ) {
+              //show error message
+              alert("@TempData["Err"]");
+         }
+    });
+</script>
+
 
 
 
